@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:insight/models/category_model.dart';
 import 'package:insight/screens/inner_screens.dart/category_screen.dart';
@@ -22,6 +24,7 @@ class _AddPitchScreenState extends State<AddPitchScreen> {
   int hasFundedIndex = -1;
   double amount = 0.0;
   CategoryModel? category;
+  File? image;
   @override
   @override
   Widget build(BuildContext context) {
@@ -115,17 +118,51 @@ class _AddPitchScreenState extends State<AddPitchScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  Container(
-                    height: 60,
-                    width: 60,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color(0xff769AF2),
-                    ),
-                    child: const Icon(
-                      Icons.add,
-                      size: 30,
-                      color: Colors.white,
+                  SizedBox(
+                    height: 63,
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            GlobalMethods.pickImage().then(
+                              (pickedImage) => setState(
+                                () {
+                                  image = pickedImage;
+                                },
+                              ),
+                            );
+                          },
+                          child: Container(
+                            height: 60,
+                            width: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: const Color(0xff769AF2),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              size: 30,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const VerticalDivider(
+                          width: 15,
+                          thickness: 0.6,
+                        ),
+                        if (image != null)
+                          Container(
+                            height: 60,
+                            width: 60,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: const Color(0xff769AF2),
+                              image: DecorationImage(
+                                image: FileImage(image!),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   const SizedBox(
