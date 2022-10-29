@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:insight/consts/global_methods.dart';
+import 'package:insight/models/category_model.dart';
+import 'package:insight/models/pitch_model.dart';
+import 'package:insight/providers/pitches_provider.dart';
 import 'package:insight/screens/inner_screens.dart/pitch_detail_screen.dart';
+import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/categories_provider.dart';
 import '../../providers/user_provider.dart';
 import 'add_pitch.dart';
 
@@ -16,20 +21,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String catSelected = '';
-  final List<Map<String, String>> chipsData = [
-    {'label': 'Sports', 'imageUrl': 'assets/images/profile.image'},
-    {'label': 'Educational', 'imageUrl': 'assets/images/profile.image'},
-    {'label': 'Agriculture', 'imageUrl': 'assets/images/profile.image'},
-    {'label': 'Technology', 'imageUrl': 'assets/images/profile.image'},
-    {'label': 'Music', 'imageUrl': 'assets/images/profile.image'},
-    {'label': 'Food', 'imageUrl': 'assets/images/profile.image'},
-    {'label': 'Arts', 'imageUrl': 'assets/images/profile.image'},
-  ];
+  List<PitchModel> filteredPitches = [];
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-
+    final categories = Provider.of<CategoryProvider>(context, listen: false);
     final theme = Theme.of(context);
+    final pitches = Provider.of<PitchesProvider>(context);
     final isIos = theme.platform == TargetPlatform.iOS;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 23.0),
@@ -49,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: theme.textTheme.bodyText1,
             ),
             subtitle: Text(
-              user.user.name ?? 'Samuel',
+              user.user.name == '' ? 'Samuel' : user.user.name ?? 'Samuel',
               style: theme.textTheme.headline1,
             ),
           ),
@@ -61,20 +59,32 @@ class _HomeScreenState extends State<HomeScreen> {
             child: ListView.separated(
               physics: GlobalMethods.scrollPhysics(isIos),
               scrollDirection: Axis.horizontal,
-              itemCount: chipsData.length,
+              itemCount: categories.categories.length,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () => setState(() {
-                  catSelected = chipsData[index]['label']!;
+                  catSelected = categories.categories[index].title!;
+                  filteredPitches = pitches.pitches
+                      .where(
+                        (pitch) => pitch.category.title == catSelected,
+                      )
+                      .toList();
                 }),
                 child: Chip(
-                  backgroundColor: catSelected == chipsData[index]['label']
-                      ? const Color(0xff769AF2)
-                      : null,
+                  avatar: Image.asset(
+                    categories.categories[index].imageUrl!,
+                    color: catSelected == categories.categories[index].title!
+                        ? null
+                        : Colors.black,
+                  ),
+                  backgroundColor:
+                      catSelected == categories.categories[index].title!
+                          ? const Color(0xff769AF2)
+                          : null,
                   label: Text(
-                    chipsData[index]['label'].toString(),
+                    categories.categories[index].title!.toString(),
                   ),
                   labelStyle: TextStyle(
-                    color: catSelected == chipsData[index]['label']
+                    color: catSelected == categories.categories[index].title!
                         ? Colors.white
                         : null,
                   ),
@@ -90,18 +100,50 @@ class _HomeScreenState extends State<HomeScreen> {
             'Featured',
             style: theme.textTheme.headline1?.copyWith(fontSize: 20),
           ),
-          Expanded(
-            child: ListView.separated(
-              itemBuilder: (context, index) => UserPitch(
-                theme: theme,
-                onTap: () => Navigator.of(context).pushNamed(
-                  PitchDetailScreen.routeName,
+          if (filteredPitches.isEmpty && catSelected == '')
+            Expanded(
+              child: ListView.separated(
+                itemBuilder: (context, index) => UserPitch(
+                  title: pitches.pitches[index].title,
+                  description: pitches.pitches[index].description,
+                  categoryModel: pitches.pitches[index].category,
+                  imageUrl: pitches.pitches[index].imageUrl,
+                  amount: pitches.pitches[index].estimatedAmount,
+                  theme: theme,
+                  onTap: () => Navigator.of(context).pushNamed(
+                    PitchDetailScreen.routeName,
+                    arguments: pitches.pitches[index].id,
+                  ),
                 ),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 20),
+                itemCount: pitches.pitches.length,
               ),
-              separatorBuilder: (context, index) => const SizedBox(height: 20),
-              itemCount: 6,
             ),
-          )
+          if (filteredPitches.isNotEmpty)
+            Expanded(
+              child: ListView.separated(
+                itemBuilder: (context, index) => UserPitch(
+                  title: filteredPitches[index].title,
+                  description: filteredPitches[index].description,
+                  categoryModel: filteredPitches[index].category,
+                  imageUrl: filteredPitches[index].imageUrl,
+                  amount: filteredPitches[index].estimatedAmount,
+                  theme: theme,
+                  onTap: () => Navigator.of(context).pushNamed(
+                    PitchDetailScreen.routeName,
+                    arguments: filteredPitches[index].id,
+                  ),
+                ),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 20),
+                itemCount: filteredPitches.length,
+              ),
+            ),
+          if (filteredPitches.isEmpty && catSelected != '')
+            Expanded(
+              child: Lottie.asset('assets/empty.zip'),
+            ),
         ],
       ),
     );
@@ -113,10 +155,20 @@ class UserPitch extends StatelessWidget {
     Key? key,
     required this.theme,
     required this.onTap,
+    required this.title,
+    required this.description,
+    this.imageUrl,
+    required this.categoryModel,
+    required this.amount,
   }) : super(key: key);
 
   final ThemeData theme;
   final VoidCallback onTap;
+  final String title;
+  final String description;
+  final dynamic imageUrl;
+  final CategoryModel categoryModel;
+  final double amount;
 
   @override
   Widget build(BuildContext context) {
@@ -128,23 +180,37 @@ class UserPitch extends StatelessWidget {
         ),
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: SizedBox(
-            width: double.infinity,
+          child: Container(
             height: 153,
-            child: Image.asset('assets/images/test.png'),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              image: imageUrl is String
+                  ? DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage(imageUrl),
+                    )
+                  : DecorationImage(
+                      fit: BoxFit.cover,
+                      image: FileImage(
+                        imageUrl,
+                      ),
+                    ),
+            ),
           ),
         ),
         const SizedBox(
           height: 10,
         ),
         Text(
-          'Header',
+          title,
           style: theme.textTheme.headline1
               ?.copyWith(fontSize: 20, color: Colors.black),
         ),
         Row(
           children: [
-            Image.asset('assets/images/ping.png'),
+            Image.asset(
+              'assets/images/ping.png',
+            ),
             const SizedBox(
               width: 6,
             ),
@@ -155,7 +221,7 @@ class UserPitch extends StatelessWidget {
           ],
         ),
         Text(
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Turpis elit proin nibh libero sollicitudin velit. Donec nulla quam nibh in blandit orci, pretium',
+          description,
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.justify,
@@ -171,13 +237,13 @@ class UserPitch extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'GHS 10000',
+                  'GH₵ ${amount.toString()}',
                   style: theme.textTheme.bodyText1?.copyWith(
                     color: const Color(0xff3D56F0),
                   ),
                 ),
                 Text(
-                  'Target',
+                  'Estimate',
                   style: theme.textTheme.labelMedium,
                 ),
               ],
