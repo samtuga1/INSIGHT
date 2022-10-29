@@ -1,0 +1,4 @@
+enum UserStatus {
+  businessOwner,
+  investor,
+}
