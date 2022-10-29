@@ -19,18 +19,22 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.fromLTRB(23, 133, 23, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: ListView(
+          //crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Get Started Now',
-              style: theme.textTheme.headline1,
+            Align(
+              alignment: Alignment.topCenter,
+              child: Text(
+                'Get Started Now',
+                style: theme.textTheme.headline1,
+              ),
             ),
             const SizedBox(
               height: 36,
             ),
             Text(
               'It\'s free to join and gain full access to thousands of exciting investment opportunities',
+              textAlign: TextAlign.center,
               style: theme.textTheme.bodyText1,
             ),
             const SizedBox(
