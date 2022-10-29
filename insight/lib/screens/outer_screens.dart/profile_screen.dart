@@ -49,7 +49,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 8,
               ),
               Text(
-                user.user.email ?? 'Samuel@gmail.com',
+                user.user.name == ''
+                    ? 'Samuel@gmail.com'
+                    : user.user.name ?? 'Samuel@gmail.com',
                 style: theme.textTheme.bodyText1?.copyWith(fontSize: 18),
               ),
               TextButton(
