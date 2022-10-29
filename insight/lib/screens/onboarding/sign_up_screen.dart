@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:insight/screens/bottom_navigation.dart';
+import 'package:provider/provider.dart';
 
 import '../../consts/global_methods.dart';
+import '../../providers/user_provider.dart';
 import '../../widgets/text_form_box.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -29,6 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
     final theme = Theme.of(context);
     final isIos = theme.platform == TargetPlatform.iOS;
     return GestureDetector(
@@ -75,7 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       TextFormBox(
                         theme: theme,
-                        onChanged: (String value) {},
+                        onChanged: (value) {},
                         controller: emailController,
                         labelText: 'Enter email here',
                         prefixIcon: 'assets/images/email.png',
@@ -112,24 +115,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 20,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Row(
-                            children: [
-                              Switch.adaptive(
-                                  activeColor: theme.primaryColor,
-                                  value: rememberMeStat,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      rememberMeStat = value;
-                                    });
-                                  }),
-                              Text(
-                                'Remember Me',
-                                style: theme.textTheme.bodyText1,
-                              )
-                            ],
-                          ),
                           TextButton(
                             onPressed: () {},
                             child: Text(
@@ -150,6 +137,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             )
                           : GlobalMethods.materialButton(
                               onPressed: () {
+                                user.setUser(
+                                  emailController.text,
+                                  nameController.text,
+                                );
                                 setState(() {
                                   loading = true;
                                 });
