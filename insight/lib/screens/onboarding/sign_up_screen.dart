@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:insight/screens/bottom_navigation.dart';
 
 import '../../consts/global_methods.dart';
 import '../../widgets/text_form_box.dart';
@@ -12,6 +15,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  bool loading = false;
   final TextEditingController nameController = TextEditingController();
 
   final TextEditingController emailController = TextEditingController();
@@ -140,11 +144,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 49,
                       ),
-                      GlobalMethods.materialButton(
-                        onPressed: () {},
-                        theme: theme,
-                        child: 'Create my account',
-                      ),
+                      loading
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : GlobalMethods.materialButton(
+                              onPressed: () {
+                                setState(() {
+                                  loading = true;
+                                });
+                                Timer(
+                                    const Duration(milliseconds: 1000),
+                                    () => {
+                                          setState(() {
+                                            loading = false;
+                                          }),
+                                          Navigator.of(context)
+                                              .pushNamedAndRemoveUntil(
+                                            NavigationScreen.routeName,
+                                            (route) => false,
+                                          )
+                                        });
+                              },
+                              theme: theme,
+                              child: 'Create my account',
+                            ),
                       const SizedBox(
                         height: 34,
                       ),
