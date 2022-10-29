@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:insight/consts/theme.dart';
 import 'package:insight/providers/categories_provider.dart';
+import 'package:insight/providers/pitches_provider.dart';
 import 'package:insight/providers/user_provider.dart';
 import 'package:insight/screens/bottom_navigation.dart';
 import 'package:insight/screens/inner_screens.dart/pitch_detail_screen.dart';
@@ -32,6 +33,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<User>(
           create: (context) => User(),
+        ),
+        ChangeNotifierProvider<PitchesProvider>(
+          create: (context) => PitchesProvider(),
         )
       ],
       child: MaterialApp(
