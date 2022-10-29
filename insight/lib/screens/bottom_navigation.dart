@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:insight/consts/enums.dart';
+import 'package:insight/models/user_model.dart';
+import 'package:insight/providers/user_provider.dart';
 import 'package:insight/screens/outer_screens.dart/add_pitch.dart';
 import 'package:insight/screens/outer_screens.dart/chats_screen.dart';
 import 'package:insight/screens/inner_screens.dart/message_screen.dart';
 import 'package:insight/screens/outer_screens.dart/pitches_screen.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 import 'outer_screens.dart/home_screen.dart';
 import 'outer_screens.dart/profile_screen.dart';
 
@@ -16,20 +20,20 @@ class NavigationScreen extends StatefulWidget {
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
-  List<Widget> pages = [
-    const HomeScreen(),
-    const PitchesScreen(),
-    const AddPitchScreen(),
-    const ChatsScreen(),
-    const ProfileScreen()
-  ];
+  late List<Widget> pages;
   int currentPageIndex = 0;
-  void togglePage(int page) {
-    if (page == 2) {
-      showCupertinoModalBottomSheet(
-        context: context,
-        builder: (context) => const AddPitchScreen(),
-      );
+  void togglePage(int page, UserModel user) {
+    if (user.userStatus == UserStatus.businessOwner) {
+      if (page == 2) {
+        showCupertinoModalBottomSheet(
+          context: context,
+          builder: (context) => const AddPitchScreen(),
+        );
+      } else {
+        setState(() {
+          currentPageIndex = page;
+        });
+      }
     } else {
       setState(() {
         currentPageIndex = page;
@@ -38,8 +42,22 @@ class _NavigationScreenState extends State<NavigationScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final user = Provider.of<User>(context);
+    pages = [
+      const HomeScreen(),
+      const PitchesScreen(),
+      if (user.user.userStatus == UserStatus.businessOwner)
+        const AddPitchScreen(),
+      const ChatsScreen(),
+      const ProfileScreen()
+    ];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final user = Provider.of<User>(context);
     return Scaffold(
       //backgroundColor: theme.scaffoldBackgroundColor,
       bottomNavigationBar: BottomNavigationBar(
@@ -47,7 +65,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
           backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed,
           currentIndex: currentPageIndex,
-          onTap: (val) => togglePage(val),
+          onTap: (val) => togglePage(val, user.user),
           items: [
             BottomNavigationBarItem(
               icon: Image.asset(
@@ -65,17 +83,20 @@ class _NavigationScreenState extends State<NavigationScreen> {
                     ? Colors.blue
                     : const Color(0xffD6DBDE),
               ),
-              label: 'Pitches',
+              label: user.user.userStatus == UserStatus.businessOwner
+                  ? 'Pitches'
+                  : 'Favorites',
             ),
-            const BottomNavigationBarItem(
-              icon: CircleAvatar(
-                radius: 27,
-                child: Icon(
-                  Icons.add,
+            if (user.user.userStatus == UserStatus.businessOwner)
+              const BottomNavigationBarItem(
+                icon: CircleAvatar(
+                  radius: 27,
+                  child: Icon(
+                    Icons.add,
+                  ),
                 ),
+                label: '',
               ),
-              label: '',
-            ),
             BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/images/chat.png',
@@ -95,7 +116,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
               label: 'Profile',
             ),
           ]),
-      //backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: IndexedStack(
           index: currentPageIndex,
