@@ -14,10 +14,11 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    DevicePreview(
-      enabled: !kReleaseMode,
-      builder: (context) => const MyApp(),
-    ),
+    const MyApp(),
+    // DevicePreview(
+    //   enabled: !kReleaseMode,
+    //   builder: (context) => const MyApp(),
+    // ),
   );
 }
 
@@ -39,9 +40,9 @@ class MyApp extends StatelessWidget {
         )
       ],
       child: MaterialApp(
-        useInheritedMediaQuery: true,
-        locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
+        // useInheritedMediaQuery: true,
+        // locale: DevicePreview.locale(context),
+        // builder: DevicePreview.appBuilder,
         theme: AppTheme.appTheme(),
         home: const GetStartedScreen(),
         routes: {
