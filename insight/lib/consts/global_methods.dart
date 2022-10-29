@@ -24,4 +24,10 @@ class GlobalMethods {
       )),
     );
   }
+
+  static ScrollPhysics scrollPhysics(bool isIos) {
+    return isIos
+        ? const BouncingScrollPhysics()
+        : const AlwaysScrollableScrollPhysics();
+  }
 }
