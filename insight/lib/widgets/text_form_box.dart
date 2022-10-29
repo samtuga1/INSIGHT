@@ -11,21 +11,27 @@ class TextFormBox extends StatelessWidget {
     this.suffixIcon,
     this.suffixIconPressed,
     this.controller,
+    this.maxLines,
+    this.textInputType,
   }) : super(key: key);
 
   final ThemeData theme;
   final String? labelText;
-  final String? prefixIcon;
+  final dynamic prefixIcon;
   final Function validator;
   final Function onChanged;
   final String? suffixIcon;
   final Function()? suffixIconPressed;
   final TextEditingController? controller;
+  final int? maxLines;
+  final TextInputType? textInputType;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      maxLines: maxLines,
       controller: controller,
+      keyboardType: textInputType,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       cursorHeight: 25,
       onChanged: (value) => onChanged(value),
@@ -39,7 +45,8 @@ class TextFormBox extends StatelessWidget {
               ),
         labelText: labelText ?? 'Enter here',
         labelStyle: theme.textTheme.labelMedium,
-        prefixIcon: prefixIcon == null ? null : Image.asset(prefixIcon!),
+        prefixIcon:
+            prefixIcon is String ? Image.asset(prefixIcon!) : prefixIcon,
         fillColor: const Color(0xFFF8F8F8),
         filled: true,
         enabledBorder: OutlineInputBorder(
