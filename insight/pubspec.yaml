@@ -39,6 +39,8 @@ dependencies:
   # THIS IS FOR PREVIEWING ON DIFFERENT SCREENS
   device_preview: ^1.1.0
   flutter_svg: ^1.1.4
+  modal_bottom_sheet: ^2.1.2
+  provider: ^6.0.4
 
 dev_dependencies:
   flutter_test:
