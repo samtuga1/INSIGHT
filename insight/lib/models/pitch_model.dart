@@ -1,8 +1,10 @@
+import 'package:insight/models/category_model.dart';
+
 class PitchModel {
   String? title;
   String? description;
   String? imageUrl;
-  String? category;
+  CategoryModel? category;
   double? estimatedAmount;
   bool? spentMoneyAlready;
   double? previousAmountSpent;
