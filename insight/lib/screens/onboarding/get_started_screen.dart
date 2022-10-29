@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:insight/consts/enums.dart';
 import 'package:insight/consts/global_methods.dart';
 import 'package:insight/providers/user_provider.dart';
 import 'package:insight/screens/onboarding/sign_up_screen.dart';
@@ -13,7 +14,6 @@ class GetStartedScreen extends StatefulWidget {
 }
 
 class _GetStartedScreenState extends State<GetStartedScreen> {
-  String userStatus = '';
   int selected = 3;
   @override
   Widget build(BuildContext context) {
@@ -59,20 +59,18 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                   onTap: index == 0
                       ? () => setState(() {
                             selected = 0;
-                            userStatus = 'investor';
-                            user.setUserStatus(userStatus);
+                            user.setUserStatus(UserStatus.investor);
                           })
                       : () => setState(() {
                             selected = 1;
-                            userStatus = 'business_owner';
-                            user.setUserStatus(userStatus);
+                            user.setUserStatus(UserStatus.businessOwner);
                           }),
                   index: index,
                 ),
               ),
             ),
             const SizedBox(
-              height: 110,
+              height: 70,
             ),
             GlobalMethods.materialButton(
               onPressed: () => Navigator.of(context).pushNamed(
