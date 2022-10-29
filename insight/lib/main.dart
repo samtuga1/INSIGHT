@@ -35,9 +35,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<User>(
           create: (context) => User(),
         ),
-        ChangeNotifierProvider<PitchesProvider>(
-          create: (context) => PitchesProvider(),
-        )
       ],
       child: MaterialApp(
         // useInheritedMediaQuery: true,
