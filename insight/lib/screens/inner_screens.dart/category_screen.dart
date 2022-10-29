@@ -7,7 +7,7 @@ import 'package:insight/screens/outer_screens.dart/add_pitch.dart';
 import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatelessWidget {
-  CategoryScreen({super.key});
+  const CategoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
