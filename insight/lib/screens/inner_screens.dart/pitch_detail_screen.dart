@@ -1,15 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:insight/consts/enums.dart';
 import 'package:insight/consts/global_methods.dart';
+import 'package:insight/providers/pitches_provider.dart';
+import 'package:insight/providers/user_provider.dart';
+import 'package:insight/screens/inner_screens.dart/message_screen.dart';
+import 'package:provider/provider.dart';
 
-class PitchDetailScreen extends StatelessWidget {
+class PitchDetailScreen extends StatefulWidget {
   static const routeName = '/pitch_detail';
   const PitchDetailScreen({super.key});
 
   @override
+  State<PitchDetailScreen> createState() => _PitchDetailScreenState();
+}
+
+class _PitchDetailScreenState extends State<PitchDetailScreen> {
+  bool isFavorite = false;
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isIos = theme.platform == TargetPlatform.iOS;
+    final pitchId = ModalRoute.of(context)?.settings.arguments as dynamic;
+    final pitch = Provider.of<PitchesProvider>(context).findById(pitchId);
+    final user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -18,10 +32,23 @@ class PitchDetailScreen extends StatelessWidget {
         ),
         backgroundColor: theme.accentColor,
         actions: [
-          IconButton(
-            icon: const Icon(CupertinoIcons.star),
-            onPressed: () {},
-          ),
+          if (user.user.userStatus == UserStatus.investor)
+            IconButton(
+              color: isFavorite ? Colors.pink : null,
+              icon: const Icon(
+                CupertinoIcons.star,
+              ),
+              onPressed: () {
+                setState(() {
+                  isFavorite = !isFavorite;
+                });
+                if (isFavorite) {
+                  user.addFavPitch(pitch);
+                } else {
+                  user.removeFavPitch(pitch);
+                }
+              },
+            ),
         ],
       ),
       body: ListView(
@@ -37,7 +64,7 @@ class PitchDetailScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Revolutionalizing fintech',
+                      pitch.title,
                       style: theme.textTheme.headline1?.copyWith(
                         fontSize: 18,
                         color: Colors.white,
@@ -65,11 +92,20 @@ class PitchDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              child: SizedBox(
+              child: Container(
                 width: double.infinity,
-                child: Image.asset(
-                  'assets/images/agric.jpeg',
-                  fit: BoxFit.cover,
+                decoration: BoxDecoration(
+                  image: pitch.imageUrl is String
+                      ? DecorationImage(
+                          fit: BoxFit.cover,
+                          image: AssetImage(pitch.imageUrl),
+                        )
+                      : DecorationImage(
+                          fit: BoxFit.cover,
+                          image: FileImage(
+                            pitch.imageUrl,
+                          ),
+                        ),
                 ),
               ),
             ),
@@ -81,7 +117,11 @@ class PitchDetailScreen extends StatelessWidget {
                 2,
                 (index) => Expanded(
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        MessageScreen.routeName,
+                      );
+                    },
                     child: Container(
                       margin: index == 0
                           ? const EdgeInsets.only(right: 5)
@@ -121,7 +161,7 @@ class PitchDetailScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'GH₵ 1200',
+                      'GH₵ ${pitch.estimatedAmount}',
                       style: theme.textTheme.labelMedium?.copyWith(
                         fontSize: 18,
                       ),
@@ -141,7 +181,7 @@ class PitchDetailScreen extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Fintech',
+                      pitch.category.title.toString(),
                       style: theme.textTheme.labelMedium?.copyWith(
                         fontSize: 18,
                       ),
@@ -149,7 +189,7 @@ class PitchDetailScreen extends StatelessWidget {
                   ],
                 ),
                 const Divider(
-                  height: 20,
+                  height: 25,
                   thickness: 0.66,
                 ),
                 Text(
@@ -163,7 +203,30 @@ class PitchDetailScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Turpis elit proin nibh libero sollicitudin velit. Donec nulla quam nibh in blandit orci, pretium.  elit proin nibh libero sollicitudin velit. Donec nulla quam nibh in blandit orci, pretiu',
+                      pitch.description,
+                      textAlign: TextAlign.justify,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(
+                  height: 25,
+                  thickness: 0.66,
+                ),
+                Text(
+                  'How previous fund was spent',
+                  style: theme.textTheme.headline1?.copyWith(
+                    fontSize: 18,
+                  ),
+                ),
+                Card(
+                  color: Colors.white,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      pitch.howPreviousMoneySpent.toString(),
                       textAlign: TextAlign.justify,
                       style: theme.textTheme.labelMedium?.copyWith(
                         fontSize: 18,
