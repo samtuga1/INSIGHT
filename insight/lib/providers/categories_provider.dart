@@ -29,7 +29,7 @@ class CategoryProvider extends ChangeNotifier {
       imageUrl: 'assets/images/health.png',
     ),
     CategoryModel(
-      title: 'Real estate',
+      title: 'Real Estate',
       imageUrl: 'assets/images/houses.png',
     ),
     CategoryModel(
@@ -42,6 +42,11 @@ class CategoryProvider extends ChangeNotifier {
   CategoryModel? get category => _category;
   void setCategory(CategoryModel cat) {
     _category = cat;
+    notifyListeners();
+  }
+
+  void revertCategory() {
+    _category = CategoryModel();
     notifyListeners();
   }
 }
