@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 class MessageBox extends StatelessWidget {
   const MessageBox({
     Key? key,
+    required this.onSubmit,
   }) : super(key: key);
+  final Function(String value) onSubmit;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class MessageBox extends StatelessWidget {
               Expanded(
                 child: Material(
                   child: TextField(
+                    onSubmitted: (value) => onSubmit(value),
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
