@@ -46,13 +46,15 @@ class ChatsScreen extends StatelessWidget {
               trailing: Column(
                 children: [
                   Text('Active now', style: theme.textTheme.labelMedium),
-                  Chip(
-                    label: Text(
-                      '146',
-                      style: theme.textTheme.bodyText1
-                          ?.copyWith(color: Colors.white),
+                  Expanded(
+                    child: Chip(
+                      label: Text(
+                        '146',
+                        style: theme.textTheme.bodyText1
+                            ?.copyWith(color: Colors.white),
+                      ),
+                      backgroundColor: theme.primaryColor,
                     ),
-                    backgroundColor: theme.primaryColor,
                   ),
                 ],
               ),
