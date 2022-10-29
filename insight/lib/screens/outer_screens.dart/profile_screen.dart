@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/user_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const routeName = '/profile';
@@ -16,6 +19,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isIos = theme.platform == TargetPlatform.iOS;
+    final user = Provider.of<User>(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(42, 0, 42, 20),
       child: ListView(
@@ -37,14 +42,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Nicholas Osei',
+                user.user.name ?? 'Samuel',
                 style: theme.textTheme.headline1,
               ),
               const SizedBox(
                 height: 8,
               ),
               Text(
-                'Samuel@gmail.com',
+                user.user.email ?? 'Samuel@gmail.com',
                 style: theme.textTheme.bodyText1?.copyWith(fontSize: 18),
               ),
               TextButton(
