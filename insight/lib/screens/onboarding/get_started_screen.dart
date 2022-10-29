@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:insight/consts/global_methods.dart';
+import 'package:insight/providers/user_provider.dart';
 import 'package:insight/screens/onboarding/sign_up_screen.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/status_container.dart';
 
 class GetStartedScreen extends StatefulWidget {
@@ -15,6 +17,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
   int selected = 3;
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
     final theme = Theme.of(context);
     return Scaffold(
       body: Padding(
@@ -57,10 +60,12 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                       ? () => setState(() {
                             selected = 0;
                             userStatus = 'investor';
+                            user.setUserStatus(userStatus);
                           })
                       : () => setState(() {
                             selected = 1;
                             userStatus = 'business_owner';
+                            user.setUserStatus(userStatus);
                           }),
                   index: index,
                 ),
