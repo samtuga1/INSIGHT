@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:insight/screens/inner_screens.dart/pitch_detail_screen.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/user_provider.dart';
 
 class PitchesScreen extends StatelessWidget {
   const PitchesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
+
     final theme = Theme.of(context);
     final isIos = theme.platform == TargetPlatform.iOS;
     return Padding(
