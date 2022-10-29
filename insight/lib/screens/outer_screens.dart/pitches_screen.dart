@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:insight/consts/enums.dart';
+import 'package:insight/consts/global_methods.dart';
 import 'package:insight/screens/inner_screens.dart/pitch_detail_screen.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/user_provider.dart';
@@ -10,7 +13,6 @@ class PitchesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context);
-
     final theme = Theme.of(context);
     final isIos = theme.platform == TargetPlatform.iOS;
     return Padding(
@@ -29,22 +31,61 @@ class PitchesScreen extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          Expanded(
-            child: GridView.builder(
-              itemCount: 10,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 10,
-              ),
-              itemBuilder: (context, index) => PitchContainer(
-                theme: theme,
-                onTap: () => Navigator.of(context).pushNamed(
-                  PitchDetailScreen.routeName,
-                ),
-              ),
-            ),
-          ),
+          if (user.user.userStatus == UserStatus.businessOwner)
+            user.pitches.isEmpty
+                ? Expanded(
+                    child: Lottie.asset('assets/empty.zip'),
+                  )
+                : Expanded(
+                    child: GridView.builder(
+                      physics: GlobalMethods.scrollPhysics(isIos),
+                      itemCount: user.pitches.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 20,
+                        crossAxisSpacing: 10,
+                      ),
+                      itemBuilder: (context, index) => PitchContainer(
+                        title: user.pitches[index].title,
+                        imageUrl: user.pitches[index].imageUrl,
+                        description: user.pitches[index].description,
+                        theme: theme,
+                        onTap: () => Navigator.of(context).pushNamed(
+                          PitchDetailScreen.routeName,
+                          arguments: user.favPitches[index].id,
+                        ),
+                      ),
+                    ),
+                  ),
+          if (user.user.userStatus == UserStatus.investor)
+            user.favPitches.isEmpty
+                ? Expanded(
+                    child: Lottie.asset('assets/empty.zip'),
+                  )
+                : Expanded(
+                    child: GridView.builder(
+                        physics: GlobalMethods.scrollPhysics(isIos),
+                        itemCount: user.favPitches.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 10,
+                        ),
+                        itemBuilder: (context, index) {
+                          return PitchContainer(
+                            title: user.favPitches[index].title,
+                            imageUrl: user.favPitches[index].imageUrl,
+                            description: user.favPitches[index].description,
+                            theme: theme,
+                            onTap: () => Navigator.of(context).pushNamed(
+                              PitchDetailScreen.routeName,
+                              arguments: user.favPitches[index].id,
+                            ),
+                          );
+                        }),
+                  ),
         ],
       ),
     );
@@ -56,10 +97,16 @@ class PitchContainer extends StatelessWidget {
     Key? key,
     required this.theme,
     required this.onTap,
+    this.imageUrl,
+    required this.title,
+    required this.description,
   }) : super(key: key);
 
   final ThemeData theme;
   final VoidCallback onTap;
+  final dynamic imageUrl;
+  final String title;
+  final String description;
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +125,19 @@ class PitchContainer extends StatelessWidget {
               padding: const EdgeInsets.all(6.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  'assets/images/agric.jpeg',
-                  fit: BoxFit.cover,
-                ),
+                child: imageUrl is String
+                    ? Image.asset(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: FileImage(imageUrl),
+                          ),
+                        ),
+                      ),
               ),
             ),
           ),
@@ -89,11 +145,13 @@ class PitchContainer extends StatelessWidget {
             height: 7,
           ),
           Text(
-            'Header',
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.headline1?.copyWith(fontSize: 16),
           ),
           Text(
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Turpis elit proin nibh libero sollicitudin velit. Donec nulla quam nibh in blandit orci, pretium',
+            description,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.start,
