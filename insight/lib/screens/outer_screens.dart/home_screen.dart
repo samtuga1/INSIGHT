@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:insight/consts/global_methods.dart';
 import 'package:insight/screens/inner_screens.dart/pitch_detail_screen.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:provider/provider.dart';
 
+import '../../providers/user_provider.dart';
 import 'add_pitch.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,6 +27,8 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context);
+
     final theme = Theme.of(context);
     final isIos = theme.platform == TargetPlatform.iOS;
     return Padding(
@@ -45,7 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: theme.textTheme.bodyText1,
             ),
             subtitle: Text(
-              'Samuel',
+              user.user.name ?? 'Samuel',
               style: theme.textTheme.headline1,
             ),
           ),
