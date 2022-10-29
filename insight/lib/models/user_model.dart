@@ -3,7 +3,7 @@ import 'package:insight/models/pitch_model.dart';
 
 class UserModel {
   String? name;
-  UserStatus? userStatus;
+  String? userStatus;
   String? email;
   List<PitchModel>? pitches;
   List<PitchModel>? favPitches;
