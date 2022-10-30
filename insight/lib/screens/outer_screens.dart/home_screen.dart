@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
     final user = Provider.of<User>(context);
     final categories = Provider.of<CategoryProvider>(context, listen: false);
     final theme = Theme.of(context);
-    final pitches = Provider.of<PitchesProvider>(context);
     final isIos = theme.platform == TargetPlatform.iOS;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 23.0),
@@ -63,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () => setState(() {
                   catSelected = categories.categories[index].title!;
-                  filteredPitches = pitches.pitches
+                  filteredPitches = user.pitches
                       .where(
                         (pitch) => pitch.category.title == catSelected,
                       )
@@ -104,20 +103,20 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: ListView.separated(
                 itemBuilder: (context, index) => UserPitch(
-                  title: pitches.pitches[index].title,
-                  description: pitches.pitches[index].description,
-                  categoryModel: pitches.pitches[index].category,
-                  imageUrl: pitches.pitches[index].imageUrl,
-                  amount: pitches.pitches[index].estimatedAmount,
+                  title: user.pitches[index].title,
+                  description: user.pitches[index].description,
+                  categoryModel: user.pitches[index].category,
+                  imageUrl: user.pitches[index].imageUrl,
+                  amount: user.pitches[index].estimatedAmount,
                   theme: theme,
                   onTap: () => Navigator.of(context).pushNamed(
                     PitchDetailScreen.routeName,
-                    arguments: pitches.pitches[index].id,
+                    arguments: user.pitches[index].id,
                   ),
                 ),
                 separatorBuilder: (context, index) =>
                     const SizedBox(height: 20),
-                itemCount: pitches.pitches.length,
+                itemCount: user.pitches.length,
               ),
             ),
           if (filteredPitches.isNotEmpty)
@@ -237,7 +236,7 @@ class UserPitch extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'GH₵ ${amount.toString()}',
+                  'GHS ${amount.toString()}',
                   style: theme.textTheme.bodyText1?.copyWith(
                     color: const Color(0xff3D56F0),
                   ),
