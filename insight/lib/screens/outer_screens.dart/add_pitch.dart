@@ -29,7 +29,7 @@ class _AddPitchScreenState extends State<AddPitchScreen> {
   File? image;
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
-  final moneySpentBeforeController = TextEditingController();
+  final moneySpentBeforeController = TextEditingController(text: '');
   final amountController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   @override
@@ -89,7 +89,7 @@ class _AddPitchScreenState extends State<AddPitchScreen> {
                         onTap: () {
                           showCupertinoModalBottomSheet(
                             context: context,
-                            builder: (context) => CategoryScreen(),
+                            builder: (context) => const CategoryScreen(),
                           ).then((_) {
                             setState(() {});
                           });
@@ -357,8 +357,9 @@ class _AddPitchScreenState extends State<AddPitchScreen> {
                             );
                             return;
                           }
-                          user.addPitch(
+                          user.addMyPitch(
                             PitchModel(
+                              id: DateTime.now(),
                               category: category!,
                               description: descriptionController.text,
                               title: titleController.text,
