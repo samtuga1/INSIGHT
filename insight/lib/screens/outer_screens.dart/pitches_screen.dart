@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:insight/consts/enums.dart';
 import 'package:insight/consts/global_methods.dart';
@@ -32,31 +34,33 @@ class PitchesScreen extends StatelessWidget {
             height: 40,
           ),
           if (user.user.userStatus == UserStatus.businessOwner)
-            user.pitches.isEmpty
+            user.myPitches.isEmpty
                 ? Expanded(
                     child: Lottie.asset('assets/empty.zip'),
                   )
                 : Expanded(
                     child: GridView.builder(
-                      physics: GlobalMethods.scrollPhysics(isIos),
-                      itemCount: user.pitches.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 20,
-                        crossAxisSpacing: 10,
-                      ),
-                      itemBuilder: (context, index) => PitchContainer(
-                        title: user.pitches[index].title,
-                        imageUrl: user.pitches[index].imageUrl,
-                        description: user.pitches[index].description,
-                        theme: theme,
-                        onTap: () => Navigator.of(context).pushNamed(
-                          PitchDetailScreen.routeName,
-                          arguments: user.favPitches[index].id,
+                        physics: GlobalMethods.scrollPhysics(isIos),
+                        itemCount: user.myPitches.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 10,
                         ),
-                      ),
-                    ),
+                        itemBuilder: (context, index) {
+                          print(user.myPitches[index].imageUrl);
+                          return PitchContainer(
+                            title: user.myPitches[index].title,
+                            imageUrl: user.myPitches[index].imageUrl,
+                            description: user.myPitches[index].description,
+                            theme: theme,
+                            onTap: () => Navigator.of(context).pushNamed(
+                              PitchDetailScreen.routeName,
+                              arguments: user.myPitches[index].id,
+                            ),
+                          );
+                        }),
                   ),
           if (user.user.userStatus == UserStatus.investor)
             user.favPitches.isEmpty
@@ -125,19 +129,23 @@ class PitchContainer extends StatelessWidget {
               padding: const EdgeInsets.all(6.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: imageUrl is String
-                    ? Image.asset(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
+                child: Container(
+                  height: 80,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    image: imageUrl is String
+                        ? DecorationImage(
                             fit: BoxFit.cover,
-                            image: FileImage(imageUrl),
+                            image: AssetImage(imageUrl),
+                          )
+                        : DecorationImage(
+                            fit: BoxFit.cover,
+                            image: FileImage(
+                              imageUrl,
+                            ),
                           ),
-                        ),
-                      ),
+                  ),
+                ),
               ),
             ),
           ),
