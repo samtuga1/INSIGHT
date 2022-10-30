@@ -22,7 +22,7 @@ class _PitchDetailScreenState extends State<PitchDetailScreen> {
     final theme = Theme.of(context);
     final isIos = theme.platform == TargetPlatform.iOS;
     final pitchId = ModalRoute.of(context)?.settings.arguments as dynamic;
-    final pitch = Provider.of<PitchesProvider>(context).findById(pitchId);
+    final pitch = Provider.of<User>(context).findById(pitchId);
     final user = Provider.of<User>(context);
     return Scaffold(
       appBar: AppBar(
@@ -161,7 +161,7 @@ class _PitchDetailScreenState extends State<PitchDetailScreen> {
                       ),
                     ),
                     Text(
-                      'GH₵ ${pitch.estimatedAmount}',
+                      'GHS ${pitch.estimatedAmount}',
                       style: theme.textTheme.labelMedium?.copyWith(
                         fontSize: 18,
                       ),
